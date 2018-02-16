@@ -7,12 +7,7 @@ var Tile = function (col, row, group){
     this.y = row * gameProperties.tileHeight;
 
     var tile = this;
-    var states = {
-        EMPTY: "EMPTY",
-        RED: "RED",
-        YELLOW: "YELLOW"
-    };
-    var currentState = states.EMPTY;
+    var currentState = gameProperties.tileStates.EMPTY;
 
     var sprite = game.add.sprite(col * (gameProperties.tileWidth + gameProperties.tilePadding), row * (gameProperties.tileHeight + gameProperties.tilePadding), currentState, null, group);
 
@@ -31,7 +26,7 @@ var Tile = function (col, row, group){
         // checks from the bottom up for empty tiles and highlights them
         let first = true;
         for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
-            if (group.children[i].key === states.EMPTY){
+            if (group.children[i].key === gameProperties.tileStates.EMPTY){
                 if(first == true){
                     group.children[i].tint = 0x00FF00;
                     first = false;
@@ -43,6 +38,7 @@ var Tile = function (col, row, group){
     }
 
     var hoverOut = function(){
+        // resets tint
         for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
             group.children[i].tint = 0xDDDDDD;
         }
@@ -51,17 +47,14 @@ var Tile = function (col, row, group){
     var click = function(){
         // checks from the bottom up for empty tiles sets the tile state
         for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
-            if (group.children[i].key === states.EMPTY){
-                // first player is red BUGFIX
-                if (gameState.playerTurn == undefined){
-                    gameState.playerTurn = states.RED;
-                }
-                group.children[i].loadTexture(gameState.playerTurn);
-                console.log(gameState.playerTurn, states.RED);
-                if (gameState.playerTurn === states.RED){
-                    gameState.playerTurn = states.YELLOW;
+            if (group.children[i].key === gameProperties.tileStates.EMPTY){
+                group.children[i].loadTexture(gameProperties.playerTurn);
+
+                // change turn
+                if (gameProperties.playerTurn === gameProperties.tileStates.RED){
+                    gameProperties.playerTurn = gameProperties.tileStates.YELLOW;
                 } else {
-                    gameState.playerTurn = states.RED;
+                    gameProperties.playerTurn = gameProperties.tileStates.RED;
                 }
                 break;
             }
@@ -70,12 +63,7 @@ var Tile = function (col, row, group){
         hoverOut();
         hoverOver();
     }
-
-    this.checkWin = function(){
-        
-    }
-
-
+    
     init();
 }
 

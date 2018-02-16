@@ -1,12 +1,18 @@
 var gameProperties = {
-    screenWidth: 640,
-    screenHeight: 480,
+    screenWidth: 1280,
+    screenHeight: 720,
 
     tileWidth: 32,
     tileHeight: 32,
     tilePadding: 5,
+    tileStates: {
+        EMPTY: "EMPTY",
+        RED: "RED",
+        YELLOW: "YELLOW"
+    },
+    playerTurn: "RED",
 
-    boardWidth: 9,
+    boardWidth: 10,
     boardHeight: 9,
 };
 
@@ -18,7 +24,6 @@ var gameState = function(game){
     this.boardTop;
     this.boardLeft;
     this.board;
-    this.playerTurn;
 };
 
 gameState.prototype = {
@@ -47,3 +52,4 @@ gameState.prototype = {
 var game = new Phaser.Game(gameProperties.screenWidth, gameProperties.screenHeight, Phaser.CANVAS, 'gameDiv');
 game.state.add(states.game, gameState);
 game.state.start(states.game);
+console.log(game);
