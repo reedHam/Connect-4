@@ -4,7 +4,8 @@ var gameProperties = {
 
     tileWidth: 32,
     tileHeight: 32,
-        
+    tilePadding: 5,
+
     boardWidth: 9,
     boardHeight: 9,
 };
@@ -17,13 +18,14 @@ var gameState = function(game){
     this.boardTop;
     this.boardLeft;
     this.board;
+    this.playerTurn;
 };
 
 gameState.prototype = {
     init: function() {
         // center board within game window
-        this.boardTop = (gameProperties.screenHeight - (gameProperties.tileHeight * gameProperties.boardHeight)) * 0.5;
-        this.boardLeft = (gameProperties.screenWidth - (gameProperties.tileWidth * gameProperties.boardWidth)) * 0.5;
+        this.boardTop = (gameProperties.screenHeight - (gameProperties.tileHeight * gameProperties.boardHeight + gameProperties.tileHeight)) * 0.5;
+        this.boardLeft = (gameProperties.screenWidth - (gameProperties.tileWidth * gameProperties.boardWidth + gameProperties.tileHeight)) * 0.5;
     },
 
     preload: function () {
