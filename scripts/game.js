@@ -5,28 +5,122 @@ var gameProperties = {
     tileWidth: 32,
     tileHeight: 32,
     tilePadding: 5,
-    tileStates: {
-        EMPTY: "EMPTY",
-        RED: "RED",
-        YELLOW: "YELLOW"
-    },
-    playerTurn: "RED",
+    winningChainLength:4,
 
     boardWidth: 10,
     boardHeight: 9,
 };
 
 var states = {
-    game: "game",
+    playerTurn: "RED",
+    modified: {
+        value: false,
+        x: -1,
+        y: -1
+    },
+    tileStates: {
+        EMPTY: "EMPTY",
+        RED: "RED",
+        YELLOW: "YELLOW",
+        WINNER: "WINNER"
+    },
+    winStates: {
+        up: "up",
+        down: "down",
+        left: "left",
+        right: "right",
+        upLeft: "upLeft",
+        upRight: "upRight",
+        downLeft: "downLeft",
+        downRight: "downRight"
+    }
 };
 
-var gameState = function(game){
+var gameSkelli = function(game){
     this.boardTop;
     this.boardLeft;
     this.board;
+
+    // takes x, y cord of tile and length of winning tile chain
+    this.checkWin = function(x, y, playedState, length){
+        // need to check in star pattern for matching tile chain 
+        let maxXidx = gameProperties.boardWidth - 1;
+        let maxYidx = gameProperties.boardHeight - 1;
+        let up = states.winStates.up;
+        let down = states.winStates.down;
+        let left = states.winStates.left;
+        let right = states.winStates.right;
+        let upLeft = states.winStates.upLeft;
+        let upRight = states.winStates.upRight; 
+        let downLeft = states.winStates.downLeft;
+        let downRight = states.winStates.downRight;
+        
+        // protection from reading past indexes
+        
+        if ((y - length) < 0){
+            up = null;
+            upLeft = null;
+            upRight = null;
+        }
+
+        if ((y + length) > maxYidx){
+            down = null;
+            downLeft = null;
+            downRight = null;
+        }
+
+        if ((x - length) < 0){
+            left = null
+            upLeft = null;
+            downLeft = null;
+        }
+
+        if ((x + length) > maxXidx){
+            right = null;
+            upRight = null;
+            downRight = null;
+        }
+
+        
+        for (let i = 0; i <= length; i++){
+            if (up && this.board.getTile(x, y - i).getState() != playedState){
+                up = null;
+            }
+
+            if (down && this.board.getTile(x, y + i).getState() != playedState){
+                down = null;
+            }
+
+            if (left && this.board.getTile(x - i, y).getState() != playedState){
+                left = null;
+            }
+
+            if (right && this.board.getTile(x + i, y).getState() != playedState){
+                right = null;
+            }
+
+            if (upLeft && this.board.getTile(x - i, y - i).getState() != playedState){
+                upLeft = null;
+            }
+
+            if (upRight && this.board.getTile(x + i, y - i).getState() != playedState){
+                upRight = null;
+            }
+
+            if (downLeft && this.board.getTile(x - i, y + i).getState() != playedState){
+                downLeft = null;
+            }
+
+            if (downRight && this.board.getTile(x + i, y + i).getState() != playedState){
+                downRight = null;
+            }
+        }
+        
+        return up || down || left || right || upLeft || downLeft || upRight || downRight;
+    }
 };
 
-gameState.prototype = {
+gameSkelli.prototype = {
     init: function() {
         // center board within game window
         this.boardTop = (gameProperties.screenHeight - (gameProperties.tileHeight * gameProperties.boardHeight + gameProperties.tileHeight)) * 0.5;
@@ -37,6 +131,7 @@ gameState.prototype = {
         game.load.image("EMPTY", "sprites/empty.png");
         game.load.image("RED", "sprites/red.png");
         game.load.image("YELLOW", "sprites/yellow.png");
+        game.load.image("WINNER", "sprites/winner.png");
     },
     
     create: function () {
@@ -45,11 +140,23 @@ gameState.prototype = {
     },
 
     update: function () {
-        
-    },
+        if (states.modified.value == true) {
+            let tempTile = this.board.getTile(states.modified.x, states.modified.y);
+
+            tempTile.updateSprite();
+            
+            let result = this.checkWin(states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength - 1);
+            if (result){
+                // display winning text
+                let winningText = game.add.text(game.world.centerX, game.world.centerY - this.boardTop, tempTile.getState() + " PLAYER WINS", { font: "65px Arial", fill: tempTile.getState(), align: "center" });
+                winningText.anchor.setTo(0.5);
+                this.board.displayWin(states.modified.x, states.modified.y, result);
+            }
+            states.modified.value = !states.modified.value;
+        }
+    }, 
 };
 
-var game = new Phaser.Game(gameProperties.screenWidth, gameProperties.screenHeight, Phaser.CANVAS, 'gameDiv');
-game.state.add(states.game, gameState);
-game.state.start(states.game);
-console.log(game);
+
+var game = new Phaser.Game(gameProperties.screenWidth, gameProperties.screenHeight, Phaser.CANVAS, 'gameDiv', gameSkelli);
+

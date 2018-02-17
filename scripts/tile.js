@@ -7,12 +7,34 @@ var Tile = function (col, row, group){
     this.y = row * gameProperties.tileHeight;
 
     var tile = this;
-    var currentState = gameProperties.tileStates.EMPTY;
+    var currentState = states.tileStates.EMPTY;
 
     var sprite = game.add.sprite(col * (gameProperties.tileWidth + gameProperties.tilePadding), row * (gameProperties.tileHeight + gameProperties.tilePadding), currentState, null, group);
 
-
+    // default highlighting is accomplished by removing this tint
     sprite.tint = 0xdddddd;
+
+    this.getState = function(){
+        return currentState;
+    }
+
+    this.setState = function(newState){
+        currentState = newState;
+    }
+    
+    this.disableInput = function(){
+        sprite.inputEnabled = false;
+    }
+
+    this.updateSprite = function(){
+        sprite.loadTexture(currentState);
+        hoverOut();
+        hoverOver();
+    }
+
+    this.resetHighlight = function(){
+        sprite.tint = 0xdddddd;
+    }
 
     var init = function(){
         sprite.inputEnabled = true;
@@ -23,12 +45,12 @@ var Tile = function (col, row, group){
     }
 
     var hoverOver = function(){
-        // checks from the bottom up for empty tiles and highlights them
+        // checks from the bottom up for empty tiles and highlights them (highlights the placement tile green)
         let first = true;
         for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
-            if (group.children[i].key === gameProperties.tileStates.EMPTY){
+            if (group.children[i].key === states.tileStates.EMPTY){
                 if(first == true){
-                    group.children[i].tint = 0x00FF00;
+                    group.children[i].tint = 0x77FF77;
                     first = false;
                 } else {
                     group.children[i].tint = 0xFFFFFF;
@@ -46,20 +68,20 @@ var Tile = function (col, row, group){
 
     var click = function(){
         // checks from the bottom up for empty tiles sets the tile state
-        for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
-            if (group.children[i].key === gameProperties.tileStates.EMPTY){
-                group.children[i].loadTexture(gameProperties.playerTurn);
-
-                // change turn
-                if (gameProperties.playerTurn === gameProperties.tileStates.RED){
-                    gameProperties.playerTurn = gameProperties.tileStates.YELLOW;
-                } else {
-                    gameProperties.playerTurn = gameProperties.tileStates.RED;
-                }
+        let board = game.state.states.default.board;
+        for(let y = gameProperties.boardHeight - 1, x = tile.col; y >= 0; y--){
+            let tempTile = board.getTile(x, y);
+            if (tempTile.getState() == states.tileStates.EMPTY){
+                tempTile.setState(states.playerTurn);
+                tempTile.disableInput();
+                // changes player turn
+                states.playerTurn = states.playerTurn == states.tileStates.RED ? states.tileStates.YELLOW : states.tileStates.RED;
+                states.modified.value = !states.modified.value;
+                states.modified.x = tempTile.col;
+                states.modified.y = tempTile.row;
                 break;
             }
         }
-        // refresh the tile col
         hoverOut();
         hoverOver();
     }
