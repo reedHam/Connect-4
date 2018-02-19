@@ -10,7 +10,8 @@ var Tile = function (col, row, group){
     var currentState = states.tileStates.EMPTY;
 
     var sprite = game.add.sprite(col * (gameProperties.tileWidth + gameProperties.tilePadding), row * (gameProperties.tileHeight + gameProperties.tilePadding), currentState, null, group);
-
+    sprite.scale.set(gameProperties.scale, gameProperties.scale)
+    
     // default highlighting is accomplished by removing this tint
     sprite.tint = 0xdddddd;
 
@@ -32,6 +33,12 @@ var Tile = function (col, row, group){
         hoverOver();
     }
 
+    this.winTween = function(){
+        var tween = game.add.tween(sprite);
+        tween.to({x: tile.x - 50, y: tile.y - 50}, 200, Phaser.Easing.Circular.easeOut);
+        tween.start();
+    }
+
     this.resetHighlight = function(){
         sprite.tint = 0xdddddd;
     }
@@ -50,7 +57,7 @@ var Tile = function (col, row, group){
         for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
             if (group.children[i].key === states.tileStates.EMPTY){
                 if(first == true){
-                    group.children[i].tint = 0x77FF77;
+                    group.children[i].tint = gameProperties.playerTurnHex[states.playerTurn];
                     first = false;
                 } else {
                     group.children[i].tint = 0xFFFFFF;

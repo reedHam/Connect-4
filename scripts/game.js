@@ -2,13 +2,25 @@ var gameProperties = {
     screenWidth: 1280,
     screenHeight: 720,
 
-    tileWidth: 32,
-    tileHeight: 32,
+    scale: 2,
     tilePadding: 5,
+
+    get tileWidth () {
+        return 32 * this.scale;
+    },
+    get tileHeight (){
+        return 32 * this.scale;
+    },
+    
     winningChainLength:4,
 
-    boardWidth: 10,
-    boardHeight: 9,
+    boardWidth: 7,
+    boardHeight: 6,
+
+    playerTurnHex:{
+        RED: "0xFF7777",
+        YELLOW: "0xFFFF00"
+    }
 };
 
 var states = {
@@ -40,6 +52,7 @@ var gameSkelli = function(game){
     this.boardTop;
     this.boardLeft;
     this.board;
+    this.btnReset;
 
     // takes x, y cord of tile and length of winning tile chain
     this.checkWin = function(x, y, playedState, length){
@@ -81,7 +94,7 @@ var gameSkelli = function(game){
             downRight = null;
         }
 
-        
+        // check the star shape
         for (let i = 0; i <= length; i++){
             if (up && this.board.getTile(x, y - i).getState() != playedState){
                 up = null;
@@ -123,8 +136,8 @@ var gameSkelli = function(game){
 gameSkelli.prototype = {
     init: function() {
         // center board within game window
-        this.boardTop = (gameProperties.screenHeight - (gameProperties.tileHeight * gameProperties.boardHeight + gameProperties.tileHeight)) * 0.5;
-        this.boardLeft = (gameProperties.screenWidth - (gameProperties.tileWidth * gameProperties.boardWidth + gameProperties.tileHeight)) * 0.5;
+        this.boardTop = (gameProperties.screenHeight - ((gameProperties.tileHeight - gameProperties.tilePadding) * gameProperties.boardHeight + gameProperties.tileHeight)) * 0.5;
+        this.boardLeft = (gameProperties.screenWidth - ((gameProperties.tileWidth - gameProperties.tilePadding) * gameProperties.boardWidth + gameProperties.tileHeight)) * 0.5;
     },
 
     preload: function () {
@@ -132,11 +145,14 @@ gameSkelli.prototype = {
         game.load.image("RED", "sprites/red.png");
         game.load.image("YELLOW", "sprites/yellow.png");
         game.load.image("WINNER", "sprites/winner.png");
+        game.load.image("resetBtn", "sprites/resetbtn.png");
     },
     
     create: function () {
+        game.stage.backgroundColor = "#222222";
         this.board = new Board(gameProperties.boardWidth, gameProperties.boardHeight);
         this.board.moveTo(this.boardLeft, this.boardTop);
+        this.btnReset = new ResetBtn();
     },
 
     update: function () {
@@ -148,7 +164,9 @@ gameSkelli.prototype = {
             let result = this.checkWin(states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength - 1);
             if (result){
                 // display winning text
-                let winningText = game.add.text(game.world.centerX, game.world.centerY - this.boardTop, tempTile.getState() + " PLAYER WINS", { font: "65px Arial", fill: tempTile.getState(), align: "center" });
+                let winningText = game.add.text(game.world.centerX, game.world.centerY - this.boardTop, tempTile.getState() + " PLAYER WINS", 
+                    { font: "65px Arial", fill: tempTile.getState(), align: "center", stroke:"#111111", strokeThickness: 6 }
+                );
                 winningText.anchor.setTo(0.5);
                 this.board.displayWin(states.modified.x, states.modified.y, result);
             }
