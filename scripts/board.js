@@ -32,28 +32,20 @@ var Board = function (cols, rows){
         for (let i = 0, ln = gameProperties.winningChainLength - 1; i <= ln; i++){
             if (chain == states.winStates.up){
                 board[y - i][x].winTween();
-                group.swap(group.children[x + (gameProperties.boardWidth * (y - i))], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.down){
                 board[y + i][x].winTween();
-                group.swap(group.children[x + (gameProperties.boardWidth * (y + i))], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.left){
                 board[y][x - i].winTween();
-                group.swap(group.children[(x - i) + (gameProperties.boardWidth * y)], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.right){
                 board[y][x + i].winTween();
-                group.swap(group.children[(x + i) + (gameProperties.boardWidth * y)], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.upRight){
                 board[y - i][x - i].winTween();
-                group.swap(group.children[(x - i) + (gameProperties.boardWidth * (y - i))], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.upLeft){
                 board[y - i][x + i].winTween();
-                group.swap(group.children[(x + i) + (gameProperties.boardWidth * (y - i))], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.downLeft){
                 board[y + i][x - i].winTween();
-                group.swap(group.children[(x - i)+ (gameProperties.boardWidth * (y + i))], group.children[group.children.length - i - 1]);
             } else if (chain == states.winStates.downRight){
                 board[y + i][x + i].winTween();
-                group.swap(group.children[(x + i) + (gameProperties.boardWidth * (y + i))], group.children[group.children.length - i - 1]);
             } else {
                 throw "ERROR DISPLAYING WIN: DEFAULT STATE REACHED";
             }

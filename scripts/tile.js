@@ -35,7 +35,7 @@ var Tile = function (col, row, group){
 
     this.winTween = function(){
         var tween = game.add.tween(sprite);
-        tween.to({x: tile.x - 50, y: tile.y - 50}, 200, Phaser.Easing.Circular.easeOut);
+        tween.to({x: tile.x - 3, y: tile.y - 3}, 200, Phaser.Easing.Circular.easeOut);
         tween.start();
     }
 
@@ -66,13 +66,14 @@ var Tile = function (col, row, group){
         }
     }
 
+    // so the ai can clear the highlighting 
     var hoverOut = function(){
         // resets tint
         for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
             group.children[i].tint = 0xDDDDDD;
         }
     }
-
+    
     var click = function(){
         // checks from the bottom up for empty tiles sets the tile state
         let board = game.state.states.default.board;
@@ -89,10 +90,10 @@ var Tile = function (col, row, group){
                 break;
             }
         }
-        hoverOut();
-        hoverOver();
+
     }
-    
+    // to allow for virtual clicks
+    this.click = click;
     init();
 }
 

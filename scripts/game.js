@@ -17,6 +17,9 @@ var gameProperties = {
     boardWidth: 7,
     boardHeight: 6,
 
+    AIEnable: false,
+    AIPlayerTurn: "RED",
+
     playerTurnHex:{
         RED: "0xFF7777",
         YELLOW: "0xFFFF00"
@@ -53,6 +56,8 @@ var gameSkelli = function(game){
     this.boardLeft;
     this.board;
     this.btnReset;
+    this.AIPlayer;
+    this.win;
 
     // takes x, y cord of tile and length of winning tile chain
     this.checkWin = function(x, y, playedState, length){
@@ -138,6 +143,7 @@ gameSkelli.prototype = {
         // center board within game window
         this.boardTop = (gameProperties.screenHeight - ((gameProperties.tileHeight - gameProperties.tilePadding) * gameProperties.boardHeight + gameProperties.tileHeight)) * 0.5;
         this.boardLeft = (gameProperties.screenWidth - ((gameProperties.tileWidth - gameProperties.tilePadding) * gameProperties.boardWidth + gameProperties.tileHeight)) * 0.5;
+        this.win = false;
     },
 
     preload: function () {
@@ -153,14 +159,16 @@ gameSkelli.prototype = {
         this.board = new Board(gameProperties.boardWidth, gameProperties.boardHeight);
         this.board.moveTo(this.boardLeft, this.boardTop);
         this.btnReset = new ResetBtn();
+        this.AIPlayer = new miniMaxAI(5);
     },
 
     update: function () {
+        
         if (states.modified.value == true) {
             let tempTile = this.board.getTile(states.modified.x, states.modified.y);
 
             tempTile.updateSprite();
-            
+
             let result = this.checkWin(states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength - 1);
             if (result){
                 // display winning text
@@ -169,10 +177,15 @@ gameSkelli.prototype = {
                 );
                 winningText.anchor.setTo(0.5);
                 this.board.displayWin(states.modified.x, states.modified.y, result);
+                this.win = true;
             }
             states.modified.value = !states.modified.value;
         }
-    }, 
+
+        if (states.playerTurn == gameProperties.AIPlayerTurn && gameProperties.AIEnable == true && this.win != true){
+                this.AIPlayer.preformTurn(this.board);
+            }
+        }
 };
 
 
