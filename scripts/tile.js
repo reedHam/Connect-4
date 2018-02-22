@@ -39,6 +39,10 @@ var Tile = function (col, row, group){
         tween.start();
     }
 
+    this.highlight = function(color = 0xFFFFFF){
+        sprite.tint = color;
+    }
+
     this.resetHighlight = function(){
         sprite.tint = 0xdddddd;
     }
@@ -52,25 +56,26 @@ var Tile = function (col, row, group){
     }
 
     var hoverOver = function(){
-        // checks from the bottom up for empty tiles and highlights them (highlights the placement tile green)
+        let board = game.state.states.default.board;
         let first = true;
-        for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
-            if (group.children[i].key === states.tileStates.EMPTY){
-                if(first == true){
-                    group.children[i].tint = gameProperties.playerTurnHex[states.playerTurn];
+        for(let y = gameProperties.boardHeight - 1, x = tile.col; y >= 0; y--){
+            if (board.getTile(x, y).getState() == states.tileStates.EMPTY){
+                if (first == true){
+                    board.getTile(x, y).highlight(gameProperties.playerTurnHex[states.playerTurn]);
                     first = false;
                 } else {
-                    group.children[i].tint = 0xFFFFFF;
+                    board.getTile(x, y).highlight();
                 }
             }
         }
     }
 
-    // so the ai can clear the highlighting 
     var hoverOut = function(){
-        // resets tint
-        for (let i = group.children.length - (gameProperties.boardWidth - tile.col), rowLn = gameProperties.boardWidth; i >= 0; i -= rowLn){
-            group.children[i].tint = 0xDDDDDD;
+        let board = game.state.states.default.board;
+        for (let x = 0; x < gameProperties.boardWidth; x++){
+            for (let y = 0; y < gameProperties.boardHeight; y++){
+                board.getTile(x, y).resetHighlight();
+            }
         }
     }
     
@@ -90,8 +95,8 @@ var Tile = function (col, row, group){
                 break;
             }
         }
-
     }
+    
     // to allow for virtual clicks
     this.click = click;
     init();

@@ -58,84 +58,6 @@ var gameSkelli = function(game){
     this.btnReset;
     this.AIPlayer;
     this.win;
-
-    // takes x, y cord of tile and length of winning tile chain
-    this.checkWin = function(x, y, playedState, length){
-        // need to check in star pattern for matching tile chain 
-        let maxXidx = gameProperties.boardWidth - 1;
-        let maxYidx = gameProperties.boardHeight - 1;
-        let up = states.winStates.up;
-        let down = states.winStates.down;
-        let left = states.winStates.left;
-        let right = states.winStates.right;
-        let upLeft = states.winStates.upLeft;
-        let upRight = states.winStates.upRight; 
-        let downLeft = states.winStates.downLeft;
-        let downRight = states.winStates.downRight;
-        
-        // protection from reading past indexes
-        
-        if ((y - length) < 0){
-            up = null;
-            upLeft = null;
-            upRight = null;
-        }
-
-        if ((y + length) > maxYidx){
-            down = null;
-            downLeft = null;
-            downRight = null;
-        }
-
-        if ((x - length) < 0){
-            left = null
-            upLeft = null;
-            downLeft = null;
-        }
-
-        if ((x + length) > maxXidx){
-            right = null;
-            upRight = null;
-            downRight = null;
-        }
-
-        // check the star shape
-        for (let i = 0; i <= length; i++){
-            if (up && this.board.getTile(x, y - i).getState() != playedState){
-                up = null;
-            }
-
-            if (down && this.board.getTile(x, y + i).getState() != playedState){
-                down = null;
-            }
-
-            if (left && this.board.getTile(x - i, y).getState() != playedState){
-                left = null;
-            }
-
-            if (right && this.board.getTile(x + i, y).getState() != playedState){
-                right = null;
-            }
-
-            if (upLeft && this.board.getTile(x - i, y - i).getState() != playedState){
-                upLeft = null;
-            }
-
-            if (upRight && this.board.getTile(x + i, y - i).getState() != playedState){
-                upRight = null;
-            }
-
-            if (downLeft && this.board.getTile(x - i, y + i).getState() != playedState){
-                downLeft = null;
-            }
-
-            if (downRight && this.board.getTile(x + i, y + i).getState() != playedState){
-                downRight = null;
-            }
-        }
-        
-        return up || down || left || right || upLeft || downLeft || upRight || downRight;
-    }
 };
 
 gameSkelli.prototype = {
@@ -159,33 +81,25 @@ gameSkelli.prototype = {
         this.board = new Board(gameProperties.boardWidth, gameProperties.boardHeight);
         this.board.moveTo(this.boardLeft, this.boardTop);
         this.btnReset = new ResetBtn();
-        this.AIPlayer = new miniMaxAI(5);
+        this.AIPlayer = new miniMaxAI(8);
     },
 
     update: function () {
         
         if (states.modified.value == true) {
             let tempTile = this.board.getTile(states.modified.x, states.modified.y);
-
             tempTile.updateSprite();
-
-            let result = this.checkWin(states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength - 1);
-            if (result){
-                // display winning text
-                let winningText = game.add.text(game.world.centerX, game.world.centerY - this.boardTop, tempTile.getState() + " PLAYER WINS", 
-                    { font: "65px Arial", fill: tempTile.getState(), align: "center", stroke:"#111111", strokeThickness: 6 }
-                );
-                winningText.anchor.setTo(0.5);
-                this.board.displayWin(states.modified.x, states.modified.y, result);
-                this.win = true;
-            }
             states.modified.value = !states.modified.value;
+
+            let result = checkWin(this.board, states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength);
+            console.log(this.AIPlayer.currentState);
+           
         }
 
         if (states.playerTurn == gameProperties.AIPlayerTurn && gameProperties.AIEnable == true && this.win != true){
                 this.AIPlayer.preformTurn(this.board);
-            }
         }
+    }
 };
 
 
