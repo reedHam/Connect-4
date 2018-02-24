@@ -34,17 +34,9 @@ class miniMaxAI {
         function assignPlayerScores(chainObj){
             if (chainObj.valid){
                 if (chainObj.counts.red > 0 && chainObj.counts.yellow == 0){
-                    if (chainObj.counts.red == gameProperties.winningChainLength){
-                        redPlayerCount = infinity;
-                    } else {
-                        redPlayerCount += Math.pow(10, chainObj.counts.red);
-                    }
+                    redPlayerCount += Math.pow(chainObj.counts.red, 10);
                 } else if (chainObj.counts.yellow > 0 && chainObj.counts.red == 0){
-                    if (chainObj.counts.yellow == gameProperties.winningChainLength){
-                        yellowPlayerCount = infinity;
-                    } else {
-                        yellowPlayerCount += Math.pow(10, chainObj.counts.yellow);
-                    }
+                    yellowPlayerCount += Math.pow(chainObj.counts.yellow, 10);
                 }
             }
         }
@@ -70,26 +62,26 @@ class miniMaxAI {
 
                 // bound protection
                 // left bound
-                if ((x - chainLength) < 0) {
+                if ((x - chainLength + 1) < 0) {
                     left.valid = false;
                     downLeft.valid = false;
                 }
 
                 // right bound
-                if ((x + chainLength) > maxXidx){
+                if ((x + chainLength - 1) > maxXidx){
                     right.valid = false;
                     downRight.valid = false;
                 }
 
                 // down bound
-                if ((y + chainLength) > maxYidx){
+                if ((y + chainLength - 1) > maxYidx){
                     down.valid = false;
                     downLeft.valid = false;
                     downRight.valid = false;
                 }
 
 
-                for (let i = 0; i <= chainLength; i++){
+                for (let i = 0; i < chainLength; i++){
                     // left
                     if (left.valid){
                         incrementCounts(left.counts, board[x - i][y]);
@@ -114,7 +106,14 @@ class miniMaxAI {
                     if (downRight.valid){
                         incrementCounts(downRight.counts, board[x + i][y + i]);
                     }
+
                 }
+
+                //console.log("left", left.valid, left.counts, x, y);
+                //console.log("right", right.valid, right.counts, x, y);
+                //console.log("down", down.valid, down.counts, x, y);
+                //console.log("downLeft", downLeft.counts);
+                //console.log("downRight", downRight.counts);
 
                 assignPlayerScores(left);
                 assignPlayerScores(right);
@@ -127,35 +126,8 @@ class miniMaxAI {
     }
 
 
-    miniMax (gameState, alpha = negInfinity, beta = infinity, depth = 0){
-        // max depth or win
-        if (depth > this.maxDepth || gameState.checkWin()){
-            return this.evaluateBoard(gameState.board)[gameState.move.player];
-        }
-
-        let successors = gameState.genSuccessors();
-        // MAX state
-        if (gameState.playerTurn == this.turn){
-            var maxVal = negInfinity;
-            successors.some(successor => {
-                let val = this.miniMax(successor, alpha, beta, depth += 1);
-                maxVal = Math.max(maxVal, val);
-                alpha = Math.max(maxVal, alpha);
-                return beta <= alpha; 
-            });
-            return maxVal;
-
-        // MIN state
-        } else {
-            var minVal = infinity;
-            successors.some(successor => {
-                let val = this.miniMax(successor, alpha, beta, depth += 1);
-                minVal = Math.min(minVal, val);
-                beta = Math.min(beta, minVal);
-                return beta <= alpha;
-            });
-            return minVal;
-        }
+    alphaBeta (gameState, alpha = negInfinity, beta = infinity, depth = 0){
+        
     }
 
     

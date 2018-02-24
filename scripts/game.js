@@ -17,7 +17,7 @@ var gameProperties = {
     boardWidth: 7,
     boardHeight: 6,
 
-    AIEnable: true,
+    AIEnable: false,
     AIPlayerTurn: "RED",
 
     playerTurnHex:{
@@ -92,7 +92,8 @@ gameSkelli.prototype = {
             states.modified.value = !states.modified.value;
 
             let result = checkWin(this.board, states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength);
-            
+            let board = this.AIPlayer.stripBoard(this.board);
+            console.log(this.AIPlayer.evaluateBoard(board));
             if (result){
                 console.log(result);
                 this.win = true;
