@@ -1,9 +1,8 @@
 class GameState {
-    constructor(board, playerTurn, move = null, utility = null){
+    constructor(board, playerTurn, move = null){
         this.move = move;
         this.board = board;
         this.playerTurn = playerTurn;
-        this.utility = utility;
     }
 
     genSuccessors() {
@@ -19,11 +18,13 @@ class GameState {
                 });
 
                 // start form bottom and place in first spot
-                for (let y = gameProperties.boardHeight - 1; y  >= 0; y++){
-                    childBoard[x][y] = this.playerTurn;
-                    childMove.x = x;
-                    childMove.y = y;
-                    break;
+                for (let y = gameProperties.boardHeight - 1; y  >= 0; y--){
+                    if (childBoard[x][y] == states.tileStates.EMPTY){
+                        childBoard[x][y] = this.playerTurn;
+                        childMove.x = x;
+                        childMove.y = y;
+                        break;
+                    }
                 }
                 successors.push(new GameState(childBoard, nextTurn, childMove));
             }

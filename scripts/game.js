@@ -17,7 +17,7 @@ var gameProperties = {
     boardWidth: 7,
     boardHeight: 6,
 
-    AIEnable: false,
+    AIEnable: true,
     AIPlayerTurn: "RED",
 
     playerTurnHex:{
@@ -81,7 +81,7 @@ gameSkelli.prototype = {
         this.board = new Board(gameProperties.boardWidth, gameProperties.boardHeight);
         this.board.moveTo(this.boardLeft, this.boardTop);
         this.btnReset = new ResetBtn();
-        this.AIPlayer = new miniMaxAI(8, gameProperties.AIPlayerTurn);
+        this.AIPlayer = new miniMaxAI(2, gameProperties.AIPlayerTurn);
     },
 
     update: function () {
@@ -92,10 +92,10 @@ gameSkelli.prototype = {
             states.modified.value = !states.modified.value;
 
             let result = checkWin(this.board, states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength);
-            let board = this.AIPlayer.stripBoard(this.board);
-            console.log(this.AIPlayer.evaluateBoard(board));
+            
             if (result){
                 console.log(result);
+                displayWin(result, states.modified.x, states.modified.y, this.board);
                 this.win = true;
             }
            

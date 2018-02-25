@@ -20,6 +20,7 @@ var ResetBtn = function(){
 
     var click = function(){
         game.state.restart();
+        states.playerTurn = "RED";
     }
 
     init();

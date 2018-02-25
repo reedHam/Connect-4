@@ -75,3 +75,36 @@ function checkWin(board, x , y, playedState, length){
     
     return up || down || left || right || upLeft || downLeft || upRight || downRight;
 }
+
+function displayWin(direction, x, y, board){
+    for (let i = 0; i < gameProperties.winningChainLength; i++){
+        switch (direction){
+            case states.winStates.up:  
+                board.getTile(x, y - i).winTween();
+                break;
+            case states.winStates.down:
+                board.getTile(x, y + i).winTween();
+                break;
+            case states.winStates.left:
+                board.getTile(x - i, y).winTween();
+                break;
+            case states.winStates.right:
+                board.getTile(x + i, y).winTween();
+                break;
+            case states.winStates.upLeft:
+                board.getTile(x - i, y - i).winTween();
+                break;
+            case states.winStates.upRight:
+                board.getTile(x + i, y - i).winTween();
+                break;
+            case states.winStates.downLeft:
+                board.getTile(x - i, y + i).winTween();
+                break;
+            case states.winStates.downRight:
+                board.getTile(x + i, y + i).winTween();
+                break;
+            default:
+                throw "ERROR DISPLAYING WIN STATE";
+        }
+    }
+}

@@ -1,6 +1,3 @@
-var negInfinity = Number.NEGATIVE_INFINITY;
-var infinity = Infinity;
-
 class miniMaxAI {
     constructor(maxDepth, turn){
         this.maxDepth = maxDepth;
@@ -122,34 +119,61 @@ class miniMaxAI {
                 assignPlayerScores(downRight);
             }
         }
-        return {RED: redPlayerCount - yellowPlayerCount, YELLOW: yellowPlayerCount - redPlayerCount};
+        return redPlayerCount - yellowPlayerCount;
     }
 
+    minVal (gameState, alpha, beta, depth){
+        if (depth >= this.maxDepth || gameState.checkWin()){
+            return this.evaluateBoard(gameState.board);
+        }
 
-    alphaBeta (gameState, alpha = negInfinity, beta = infinity, depth = 0){
-        
+        let v = Infinity;
+        let successors = gameState.genSuccessors();
+        for (let i = 0, ln = successors.length; i < ln; i++){
+            v = Math.min(v, this.maxVal(successors[i], alpha, beta, depth + 1));
+
+            if (v <= alpha) return v;
+
+            beta = Math.min(beta, v);
+        }
+        return v;
+    }
+
+    maxVal (gameState, alpha, beta, depth){
+        if (depth >= this.maxDepth || gameState.checkWin()){
+            return this.evaluateBoard(gameState.board);
+        }
+
+        let v = Number.NEGATIVE_INFINITY;
+        let successors = gameState.genSuccessors();
+        for (let i = 0, ln = successors.length; i < ln; i++){
+            v = Math.max(v, this.minVal(successors[i], alpha, beta, depth + 1));
+
+            if (v >= beta) return v;
+
+            alpha = Math.max(alpha, v);
+        }
+        return v;
+    }
+
+    alphaBeta (gameState){
+        let bestMove = -1;
+        let bestVal = Number.NEGATIVE_INFINITY;
+        gameState.genSuccessors().forEach(successor => {
+            let minSuccessor = this.minVal(successor, Number.NEGATIVE_INFINITY, Infinity, 0);
+            if (minSuccessor >= bestVal){
+                bestVal = minSuccessor;
+                bestMove = successor.move.x;
+            }
+        });
+        return bestMove;
     }
 
     
+    
     preformTurn(board){
         let stripedBoard = this.stripBoard(board);
-
-        let currentState = new GameState(stripedBoard, states.playerTurn);
-        let actions = currentState.genSuccessors();
-
-        // init best move to one of the actions
-        let bestMove = actions[0];
-        bestMove.utility = this.miniMax(bestMove);
-        
-        // for check to see if the remaining actions are better than best move
-        actions.forEach(action=> {
-            action.utility = this.miniMax(action);
-            if (action.utility >= bestMove.utility){
-                bestMove = action;
-            }
-        });
-        
-        // preform move
-        board.getTile(bestMove.move.x, 0).click();
+        let gameState = new GameState(stripedBoard, states.playerTurn);
+        board.getTile(this.alphaBeta(gameState), 0).click();
     }
 }
