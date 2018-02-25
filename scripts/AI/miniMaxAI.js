@@ -175,5 +175,7 @@ class miniMaxAI {
         let stripedBoard = this.stripBoard(board);
         let gameState = new GameState(stripedBoard, states.playerTurn);
         board.getTile(this.alphaBeta(gameState), 0).click();
+        board.getTile(this.alphaBeta(gameState), 0).resetHighlight();
+        
     }
 }

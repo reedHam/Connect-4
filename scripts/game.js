@@ -17,7 +17,7 @@ var gameProperties = {
     boardWidth: 7,
     boardHeight: 6,
 
-    AIEnable: true,
+    AIEnable: false,
     AIPlayerTurn: "RED",
 
     playerTurnHex:{
@@ -95,6 +95,8 @@ gameSkelli.prototype = {
             
             if (result){
                 console.log(result);
+                game.add.game.add.text(game.world.centerX, game.world.centerY - this.boardTop, tempTile.getState() + " PLAYER WINS", 
+                { font: "65px Arial", fill: tempTile.getState(), align: "center", stroke:"#111111", strokeThickness: 6 }).anchor.setTo(0.5);
                 displayWin(result, states.modified.x, states.modified.y, this.board);
                 this.win = true;
             }

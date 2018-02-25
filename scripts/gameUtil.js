@@ -107,4 +107,11 @@ function displayWin(direction, x, y, board){
                 throw "ERROR DISPLAYING WIN STATE";
         }
     }
+
+    for (let x = 0; x < gameProperties.boardWidth; x++){
+        for (let y = 0; y < gameProperties.boardHeight; y++){
+            board.getTile(x, y).resetHighlight();
+            board.getTile(x, y).disableInput();
+        }
+    }
 }
