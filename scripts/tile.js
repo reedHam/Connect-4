@@ -29,8 +29,11 @@ var Tile = function (col, row, group){
 
     this.updateSprite = function(){
         sprite.loadTexture(currentState);
-        hoverOut();
-        hoverOver();
+        // resets the highlighting for player placed pieces
+        if (currentState != gameProperties.AIPlayerTurn){
+            hoverOut();
+            hoverOver();
+        }
     }
 
     this.winTween = function(){
@@ -61,7 +64,7 @@ var Tile = function (col, row, group){
         for(let y = gameProperties.boardHeight - 1, x = tile.col; y >= 0; y--){
             if (board.getTile(x, y).getState() == states.tileStates.EMPTY){
                 if (first == true){
-                    board.getTile(x, y).highlight(gameProperties.playerTurnHex[states.playerTurn]);
+                    board.getTile(x, y).highlight(gameProperties.playerTurnHex[states.tileStates.YELLOW]);
                     first = false;
                 } else {
                     board.getTile(x, y).highlight();

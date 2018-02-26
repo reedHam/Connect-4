@@ -16,7 +16,8 @@ class miniMaxAI {
         return stripedBoard;
     }
 
-    // looks for chains of varying length and assigns a value based on them
+    // looks for chains of varying length and assigns a value based on the length of the chain 
+    // formula is length of chain ^ 10
     evaluateBoard(board){
         // helper function to increment counts of a tile
         function incrementCounts(countsObj, state){
@@ -105,13 +106,6 @@ class miniMaxAI {
                     }
 
                 }
-
-                //console.log("left", left.valid, left.counts, x, y);
-                //console.log("right", right.valid, right.counts, x, y);
-                //console.log("down", down.valid, down.counts, x, y);
-                //console.log("downLeft", downLeft.counts);
-                //console.log("downRight", downRight.counts);
-
                 assignPlayerScores(left);
                 assignPlayerScores(right);
                 assignPlayerScores(down);
@@ -122,8 +116,11 @@ class miniMaxAI {
         return redPlayerCount - yellowPlayerCount;
     }
 
+
+    // Helper min function for minimax with alpha beta
     minVal (gameState, alpha, beta, depth){
         if (depth >= this.maxDepth || gameState.checkWin()){
+
             return this.evaluateBoard(gameState.board);
         }
 
@@ -139,6 +136,7 @@ class miniMaxAI {
         return v;
     }
 
+    // Helper max function for minimax with alpha beta
     maxVal (gameState, alpha, beta, depth){
         if (depth >= this.maxDepth || gameState.checkWin()){
             return this.evaluateBoard(gameState.board);
@@ -156,6 +154,8 @@ class miniMaxAI {
         return v;
     }
 
+    // returns the optimal move found before a specified depth using minimax and alpha beta pruning.
+    // takes a GameState object.
     alphaBeta (gameState){
         let bestMove = -1;
         let bestVal = Number.NEGATIVE_INFINITY;
@@ -169,13 +169,11 @@ class miniMaxAI {
         return bestMove;
     }
 
-    
-    
+    // clicks on the board in the location found
     preformTurn(board){
         let stripedBoard = this.stripBoard(board);
         let gameState = new GameState(stripedBoard, states.playerTurn);
         board.getTile(this.alphaBeta(gameState), 0).click();
-        board.getTile(this.alphaBeta(gameState), 0).resetHighlight();
         
     }
 }

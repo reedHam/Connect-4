@@ -1,3 +1,5 @@
+
+// BUG this function will not find wins where the last piece of the chain was not an end piece 
 function checkWin(board, x , y, playedState, length){
     // need to check in star pattern for matching tile chain 
     length = length - 1;
@@ -76,6 +78,8 @@ function checkWin(board, x , y, playedState, length){
     return up || down || left || right || upLeft || downLeft || upRight || downRight;
 }
 
+
+// tweens the tiles to display a winning combination
 function displayWin(direction, x, y, board){
     for (let i = 0; i < gameProperties.winningChainLength; i++){
         switch (direction){

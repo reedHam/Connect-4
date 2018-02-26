@@ -17,7 +17,7 @@ var gameProperties = {
     boardWidth: 7,
     boardHeight: 6,
 
-    AIEnable: false,
+    AIEnable: true,
     AIPlayerTurn: "RED",
 
     playerTurnHex:{
@@ -81,11 +81,11 @@ gameSkelli.prototype = {
         this.board = new Board(gameProperties.boardWidth, gameProperties.boardHeight);
         this.board.moveTo(this.boardLeft, this.boardTop);
         this.btnReset = new ResetBtn();
-        this.AIPlayer = new miniMaxAI(2, gameProperties.AIPlayerTurn);
+        this.AIPlayer = new miniMaxAI(3, gameProperties.AIPlayerTurn);
     },
 
     update: function () {
-        
+        // upadtes game sprites when they are modified
         if (states.modified.value == true) {
             let tempTile = this.board.getTile(states.modified.x, states.modified.y);
             tempTile.updateSprite();
