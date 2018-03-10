@@ -33,80 +33,90 @@ class GameState {
     }
 
     checkWin() {
-        // need to check in star pattern for matching tile chain 
-        length = gameProperties.winningChainLength - 1;
-        let maxXidx = gameProperties.boardWidth - 1;
-        let maxYidx = gameProperties.boardHeight - 1;
-        let up = true;
-        let down = true;
-        let left = true;
-        let right = true;
-        let upLeft = true;
-        let upRight = true; 
-        let downLeft = true;
-        let downRight = true;
-        
-        // protection from reading past indexes
-        
-        if ((this.move.y - length) < 0){
-            up = false;
-            upLeft = false;
-            upRight = false;
+        const maxYindex = gameProperties.boardHeight - 1;
+        const maxXindex = gameProperties.boardWidth - 1;
+        const maxLength = gameProperties.winningChainLength - 1;
+
+        for (let i = 0; i <= maxLength; i++){
+            let up = {valid: true, start: {
+                x: this.move.x,
+                y: this.move.y + i
+            }};
+
+            let upLeft = {valid: true, start: {
+                x: this.move.x + i,
+                y: this.move.y + i
+            }};
+
+            let upRight = {valid: true, start: {
+                x: this.move.x - i,
+                y: this.move.y + i
+            }};
+
+            let right = {valid: true, start: {
+                x: this.move.x - i,
+                y: this.move.y
+            }};
+
+
+            // Bounding
+
+            // up
+            if (((up.start.y) > maxYindex) || (((up.start.y) - maxLength) < 0)){
+                up.valid = false;
+                upLeft.valid = false;
+                upRight.valid = false;
+            }
+
+            // right
+            if (((right.start.x) < 0) || ((right.start.x) + maxLength) > maxXindex){
+                right.valid = false;
+                upRight.valid = false;
+            }
+
+            // left
+            if (((upLeft.start.x) > maxXindex) || ((upLeft.start.x) - maxLength) < 0){
+                upLeft.valid = false;
+            }
+            
+            
+            for (let j = 0; j <= maxLength; j++){
+                // up
+                if (up.valid){
+                    if (this.board[up.start.x][up.start.y - j] != this.move.player){
+                        up.valid = false;
+                    }    
+                }
+
+                // upLeft
+                if (upLeft.valid){
+                    if (this.board[upLeft.start.x - j][upLeft.start.y - j] != this.move.player){
+                        upLeft.valid = false;
+                    }
+                }  
+
+
+                // upRight
+                if (upRight.valid) {
+                    if (this.board[upRight.start.x + j][upRight.start.y - j] != this.move.player){
+                        upRight.valid = false;
+                    }
+                }
+
+                // right
+                if (right.valid){
+                    if (this.board[right.start.x + j][right.start.y] != this.move.player){
+                        right.valid = false;
+                    }
+                } 
+            }
+
+            // if a direction is still valid
+            if (up.valid || upLeft.valid || upRight.valid || right.valid){
+                return true;
+            }
         }
-
-        if ((this.move.y + length) > maxYidx){
-            down = false;
-            downLeft = false;
-            downRight = false;
-        }
-
-        if ((this.move.x - length) < 0){
-            left = false
-            upLeft = false;
-            downLeft = false;
-        }
-
-        if ((this.move.x + length) > maxXidx){
-            right = false;
-            upRight = false;
-            downRight = false;
-        }
-
-        // check the star shape
-        for (let i = 0; i <= length; i++){
-            if (up && this.board[this.move.x][this.move.y - i] != this.move.player){
-                up = false;
-            }
-
-            if (down && this.board[this.move.x][this.move.y + i] != this.move.player){
-                down = false;
-            }
-
-            if (left && this.board[this.move.x - i][this.move.y] != this.move.player){
-                left = false;
-            }
-
-            if (right && this.board[this.move.x + i][this.move.y] != this.move.player){
-                right = false;
-            }
-
-            if (upLeft && this.board[this.move.x - i][ this.move.y - i] != this.move.player){
-                upLeft = false;
-            }
-
-            if (upRight && this.board[this.move.x + i][this.move.y - i] != this.move.player){
-                upRight = false;
-            }
-
-            if (downLeft && this.board[this.move.x - i][this.move.y + i] != this.move.player){
-                downLeft = false;
-            }
-
-            if (downRight && this.board[this.move.x + i][ this.move.y + i] != this.move.player){
-                downRight = false;
-            }
-        }
-        
-        return up || down || left || right || upLeft || downLeft || upRight || downRight;
+        // no winner
+        return false;
     }
 }

@@ -17,8 +17,11 @@ var gameProperties = {
     boardWidth: 7,
     boardHeight: 6,
 
-    AIEnable: true,
-    AIPlayerTurn: "RED",
+    AIEnable1: true,
+    AIPlayerTurn1: "RED",
+
+    AIEnable2: true,
+    AIPlayerTurn2: "YELLOW",
 
     playerTurnHex:{
         RED: "0xFF7777",
@@ -40,14 +43,10 @@ var states = {
         WINNER: "WINNER"
     },
     winStates: {
-        up: "up",
-        down: "down",
-        left: "left",
-        right: "right",
-        upLeft: "upLeft",
-        upRight: "upRight",
-        downLeft: "downLeft",
-        downRight: "downRight"
+        up: "U",
+        upLeft: "UL",
+        upRight: "UR",
+        right: "R"
     }
 };
 
@@ -65,7 +64,6 @@ gameSkelli.prototype = {
         // center board within game window
         this.boardTop = (gameProperties.screenHeight - ((gameProperties.tileHeight - gameProperties.tilePadding) * gameProperties.boardHeight + gameProperties.tileHeight)) * 0.5;
         this.boardLeft = (gameProperties.screenWidth - ((gameProperties.tileWidth - gameProperties.tilePadding) * gameProperties.boardWidth + gameProperties.tileHeight)) * 0.5;
-        this.win = false;
     },
 
     preload: function () {
@@ -80,8 +78,10 @@ gameSkelli.prototype = {
         game.stage.backgroundColor = "#222222";
         this.board = new Board(gameProperties.boardWidth, gameProperties.boardHeight);
         this.board.moveTo(this.boardLeft, this.boardTop);
+        this.win = false;
         this.btnReset = new ResetBtn();
-        this.AIPlayer = new miniMaxAI(3, gameProperties.AIPlayerTurn);
+        this.AIPlayer1 = new miniMaxAI(1, gameProperties.AIPlayerTurn1);
+        this.AIPlayer2 = new miniMaxAI(5, gameProperties.AIPlayerTurn2);
     },
 
     update: function () {
@@ -91,20 +91,22 @@ gameSkelli.prototype = {
             tempTile.updateSprite();
             states.modified.value = !states.modified.value;
 
-            let result = checkWin(this.board, states.modified.x, states.modified.y, tempTile.getState(), gameProperties.winningChainLength);
-            
+            let result = checkWin(this.board, states.modified.x, states.modified.y, tempTile.getState());
             if (result){
-                console.log(result);
                 game.add.game.add.text(game.world.centerX, game.world.centerY - this.boardTop, tempTile.getState() + " PLAYER WINS", 
                 { font: "65px Arial", fill: tempTile.getState(), align: "center", stroke:"#111111", strokeThickness: 6 }).anchor.setTo(0.5);
-                displayWin(result, states.modified.x, states.modified.y, this.board);
+                displayWin(result.direction, result.start.x, result.start.y, this.board);
                 this.win = true;
             }
-           
         }
 
-        if (states.playerTurn == gameProperties.AIPlayerTurn && gameProperties.AIEnable == true && this.win != true){
-                this.AIPlayer.preformTurn(this.board);
+        if (states.playerTurn == gameProperties.AIPlayerTurn1 && gameProperties.AIEnable1 == true && this.win != true){
+            this.AIPlayer1.preformTurn(this.board);
+            return;
+        }
+
+        if (states.playerTurn == gameProperties.AIPlayerTurn2 && gameProperties.AIEnable2 == true && this.win != true){
+            this.AIPlayer2.preformTurn(this.board);
         }
     }
 };

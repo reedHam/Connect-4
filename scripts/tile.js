@@ -64,7 +64,7 @@ var Tile = function (col, row, group){
         for(let y = gameProperties.boardHeight - 1, x = tile.col; y >= 0; y--){
             if (board.getTile(x, y).getState() == states.tileStates.EMPTY){
                 if (first == true){
-                    board.getTile(x, y).highlight(gameProperties.playerTurnHex[states.tileStates.YELLOW]);
+                    board.getTile(x, y).highlight(gameProperties.playerTurnHex[states.playerTurn]);
                     first = false;
                 } else {
                     board.getTile(x, y).highlight();

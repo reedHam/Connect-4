@@ -17,7 +17,7 @@ class miniMaxAI {
     }
 
     // looks for chains of varying length and assigns a value based on the length of the chain 
-    // formula is length of chain ^ 10
+    // formula is (length of chain * 10)^length of chain
     evaluateBoard(board){
         // helper function to increment counts of a tile
         function incrementCounts(countsObj, state){
@@ -32,9 +32,9 @@ class miniMaxAI {
         function assignPlayerScores(chainObj){
             if (chainObj.valid){
                 if (chainObj.counts.red > 0 && chainObj.counts.yellow == 0){
-                    redPlayerCount += Math.pow(chainObj.counts.red, 10);
+                    redPlayerCount += Math.pow(10 * chainObj.counts.red, chainObj.counts.red);
                 } else if (chainObj.counts.yellow > 0 && chainObj.counts.red == 0){
-                    yellowPlayerCount += Math.pow(chainObj.counts.yellow, 10);
+                    yellowPlayerCount += Math.pow(10 * chainObj.counts.yellow, chainObj.counts.yellow);
                 }
             }
         }
@@ -113,14 +113,13 @@ class miniMaxAI {
                 assignPlayerScores(downRight);
             }
         }
-        return redPlayerCount - yellowPlayerCount;
+        return this.turn == "RED" ? redPlayerCount - yellowPlayerCount : yellowPlayerCount - redPlayerCount;
     }
 
 
     // Helper min function for minimax with alpha beta
     minVal (gameState, alpha, beta, depth){
         if (depth >= this.maxDepth || gameState.checkWin()){
-
             return this.evaluateBoard(gameState.board);
         }
 
