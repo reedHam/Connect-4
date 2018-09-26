@@ -3,4 +3,4 @@
   
   Code related to MiniMax with Alpha-beta pruning can be found in scripts/AI/miniMaxAI.js
   
-  This project is an early version of this game an a more polished version can be found on my [website](www.reedhambrook.ca). 
+  This project is an early version of this game an a more polished version can be found on my [website](http:/www.reedhambrook.ca/connect4). 
